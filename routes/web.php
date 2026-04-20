@@ -6,6 +6,9 @@ use App\Models\User;
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/new', function () {
+    return view('welcome');
+});
 
 Route::get('/dashboard', function () {
     $users = User::latest()->paginate(10);
