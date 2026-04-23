@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: laravel-app
+  namespace: laravel-prod
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: laravel
+
+  template:
+    metadata:
+      labels:
+        app: laravel
+
+    spec:
+      containers:
+
+        # NGINX (handles HTTP)
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: laravel-code
+              mountPath: /var/www/html
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d
+
+        # PHP-FPM (executes Laravel)
+        - name: laravel
+          image: jawadahmad68/done:latest
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - name: laravel-code
+              mountPath: /var/www/html
+
+        - name: nginx-config
+          configMap:
+            name: nginx-config
