@@ -19,26 +19,28 @@ spec:
     spec:
       containers:
 
-        # NGINX (handles HTTP)
-        - name: nginx
-          image: nginx:alpine
-          ports:
-            - containerPort: 80
-          volumeMounts:
-            - name: laravel-code
-              mountPath: /var/www/html
-            - name: nginx-config
-              mountPath: /etc/nginx/conf.d
-
-        # PHP-FPM (executes Laravel)
         - name: laravel
           image: jawadahmad68/done:latest
           ports:
             - containerPort: 9000
-          volumeMounts:
-            - name: laravel-code
-              mountPath: /var/www/html
 
+          envFrom:
+            - configMapRef:
+                name: laravel-config
+            - secretRef:
+                name: db-secret
+
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 80
+
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+
+      volumes:
         - name: nginx-config
           configMap:
             name: nginx-config

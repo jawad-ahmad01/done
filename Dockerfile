@@ -18,7 +18,8 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 COPY . .
 
 # Install dependencies
-RUN composer install --no-dev --no-interaction --optimize-autoloader --no-scripts
+RUN composer install --no-dev --optimize-autoloader --no-interaction \
+ && php artisan optimize:clear || true
 
 # Fix permissions
 RUN chown -R www-data:www-data /var/www/html
